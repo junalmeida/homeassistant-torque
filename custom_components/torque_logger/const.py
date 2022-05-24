@@ -1,23 +1,24 @@
 """Constants for Torque Logger"""
 # Base component constants
 from typing import Final
+import json
 
 
-NAME = "Torque Logger"
-DOMAIN = "torque_logger"
-DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "1.0.0"
-ATTRIBUTION = "Data provided by Torque Pro"
-ISSUE_URL = "https://github.com/junalmeida/homeassistant-torque/issues"
+NAME: Final = "Torque Logger"
+DOMAIN: Final = "torque_logger"
+with open("manifest.json", encoding="utf-8") as file:
+    VERSION: Final = json.load(file)["version"]
+ATTRIBUTION: Final = "Data provided by Torque Pro"
+ISSUE_URL: Final = "https://github.com/junalmeida/homeassistant-torque/issues"
 
 #CONF
-CONF_EMAIL = "email"
-CONF_IMPERIAL = "imperial"
+CONF_EMAIL: Final = "email"
+CONF_IMPERIAL: Final = "imperial"
 
 # Platforms
-BINARY_SENSOR = "binary_sensor"
-SENSOR = "sensor"
-PLATFORMS = [SENSOR]
+DEVICE_TRACKER: Final = "device_tracker"
+SENSOR: Final = "sensor"
+PLATFORMS: Final = [SENSOR, DEVICE_TRACKER]
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------

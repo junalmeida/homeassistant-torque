@@ -1,8 +1,8 @@
 {
-    "name": "Torque",
+    "name": "Torque Logger",
     "hacs": "1.6.0",
     "domains": [
-        "binary_sensor",
+        "device_tracker",
         "sensor"
     ],
     "homeassistant": "0.118.0"
