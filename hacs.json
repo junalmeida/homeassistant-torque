@@ -5,5 +5,8 @@
         "device_tracker",
         "sensor"
     ],
-    "homeassistant": "0.118.0"
+    "homeassistant": "2022.4.0",
+    "filename": "torque_logger.zip",
+    "zip_release": true,
+    "hide_default_branch": true
 }

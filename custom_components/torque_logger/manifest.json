@@ -7,9 +7,9 @@
   "version": "1.0.0",
   "config_flow": true,
   "dependencies": [
-    "http",
-    "pint"
+    "http"
   ],
+  "requirements": "pint",
   "codeowners": [
     "@junalmeida"
   ]
