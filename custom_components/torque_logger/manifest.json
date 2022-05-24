@@ -4,12 +4,14 @@
   "documentation": "https://github.com/junalmeida/homeassistant-torque",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/junalmeida/homeassistant-torque/issues",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "config_flow": true,
   "dependencies": [
     "http"
   ],
-  "requirements": "pint",
+  "requirements": {
+    "pint": "*"
+  },
   "codeowners": [
     "@junalmeida"
   ]
