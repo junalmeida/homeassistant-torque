@@ -14,7 +14,7 @@ _Component to integrate with [Torque][torque]._
 
 Platform | Description
 -- | --
-`binary_sensor` | Show something `True` or `False`.
+`device_tracker` | Show your vehicle's last known location and zone.
 `sensor` | Show info from OBD/Torque sensor.
 
 
@@ -29,9 +29,6 @@ Platform | Description
 
 
 
-<!---->
-
-***
 
 [torque]: https://torque-bhp.com/
 [buymecoffee]: https://www.buymeacoffee.com/junalmeida
