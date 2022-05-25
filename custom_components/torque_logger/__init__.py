@@ -2,15 +2,15 @@
 The Torque Logger integration with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/junalmeida/homeassistant-torque
+https://github.com/junalmeida/homeassistant-torque#readme
 """
 
 import logging
 import asyncio
-from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 
 from .coordinator import TorqueLoggerCoordinator
 from .api import TorqueReceiveDataView
@@ -24,7 +24,7 @@ from .const import (
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
-async def async_setup():
+async def async_setup(*_):
     """Set up this integration using YAML is not supported."""
     return True
 
@@ -35,14 +35,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
+    hass.data[DOMAIN][entry.entry_id] = {}
+    hass.data[DOMAIN][entry.entry_id]["data"] = {}
     email = entry.data.get(CONF_EMAIL)
 
-    if hass.data[DOMAIN][entry.entry_id] is None:
-        hass.data[DOMAIN][entry.entry_id] = {}
-    if hass.data[DOMAIN][entry.entry_id]["data"] is None:
-        hass.data[DOMAIN][entry.entry_id]["data"] = {}
-
-    client= TorqueReceiveDataView(hass.data[DOMAIN][entry.entry_id]["data"], email, False)
+    client = TorqueReceiveDataView(hass.data[DOMAIN][entry.entry_id]["data"], email, False)
     coordinator = TorqueLoggerCoordinator(hass, client, entry)
     client.coordinator = coordinator
 

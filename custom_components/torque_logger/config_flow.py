@@ -35,7 +35,7 @@ class TorqueLoggerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             )
             if valid:
                 return self.async_create_entry(
-                    title=user_input[CONF_EMAIL], data=user_input
+                    title="Torque Logger", data=user_input
                 )
             else:
                 self._errors["base"] = CONF_EMAIL
@@ -53,14 +53,14 @@ class TorqueLoggerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(config_entry):
         return TorqueLoggerOptionsFlowHandler(config_entry)
 
-    async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
+    async def _show_config_form(self, user_input: dict):  # pylint: disable=unused-argument
         """Show the configuration form to edit location data."""
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_EMAIL, default=user_input[CONF_EMAIL]): str,
-                    vol.Required(CONF_IMPERIAL, default=user_input[CONF_IMPERIAL]): bool,
+                    vol.Required(CONF_EMAIL, default=user_input.get(CONF_EMAIL, "")): str,
+                    vol.Required(CONF_IMPERIAL, default=user_input.get(CONF_IMPERIAL, False)): bool,
                 }
             ),
             errors=self._errors,
@@ -68,7 +68,7 @@ class TorqueLoggerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _test_credentials(self, email: str):
         """Return true if credentials is valid."""
-        return email is not None and email.strip().count() > 0
+        return email is not None and len(email.strip()) > 0
 
 
 class TorqueLoggerOptionsFlowHandler(config_entries.OptionsFlow):

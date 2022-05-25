@@ -2,7 +2,7 @@
     "config": {
         "step": {
             "user": {
-                "description": "If you need help with the configuration have a look here: https://github.com/junalmeida/homeassistant-torque",
+                "description": "For information on how to setup Torque App and this integration, check out the help button.",
                 "data": {
                     "email": "Email",
                     "imperial": "Convert to imperial units"
@@ -21,6 +21,7 @@
             "user": {
                 "data": {
                     "binary_sensor": "Binary sensor enabled",
+                    "device_tracker": "Device Tracker enabled",
                     "sensor": "Sensor enabled",
                     "switch": "Switch enabled"
                 }

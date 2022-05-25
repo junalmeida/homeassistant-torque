@@ -1,18 +1,18 @@
 """Torque Logger API Client/DataView."""
-
+from typing import TYPE_CHECKING
 import logging
 import pint
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.core import callback
 from homeassistant.util import slugify
-from .coordinator import TorqueLoggerCoordinator
+
+from .const import TORQUE_GPS_ACCURACY, TORQUE_GPS_ALTITUDE, TORQUE_GPS_LAT, TORQUE_GPS_LON
+
+if TYPE_CHECKING:
+    from .coordinator import TorqueLoggerCoordinator
 
 TIMEOUT = 10
-
-
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
-API_PATH = "/api/torque-logger"
 
 ureg = pint.UnitRegistry()
 
@@ -62,10 +62,10 @@ assumedShortName = {
     "2f": "fuel",
     "31": "dis_mil_off",
     "ff1001": "gps_spd",
-    "ff1006": "gpslat",
-    "ff1005": "gpslon",
-    "ff1239": "gps_acc",
-    "ff1010": "gps_height",
+    "ff1006": TORQUE_GPS_LAT,
+    "ff1005": TORQUE_GPS_LON,
+    "ff1239": TORQUE_GPS_ACCURACY,
+    "ff1010": TORQUE_GPS_ALTITUDE,
     "ff1007": "gps_brng",
     "ff123a": "gps_sat",
     "ff1237": "spd_diff"
@@ -95,11 +95,11 @@ assumedFullName = {
 class TorqueReceiveDataView(HomeAssistantView):
     """Handle data from Torque requests."""
 
-    url = API_PATH
-    name = "api:torque-logger"
-    coordinator: TorqueLoggerCoordinator
+    url = "/api/torque_logger"
+    name = "api:torque_logger"
+    coordinator: 'TorqueLoggerCoordinator'
 
-    def __init__(self, data: dict[str, str], email: str, imperial: bool):
+    def __init__(self, data: dict, email: str, imperial: bool):
         """Initialize a Torque view."""
         self.data = data
         self.email = email
@@ -107,13 +107,13 @@ class TorqueReceiveDataView(HomeAssistantView):
         self.email = email
 
     @callback
-    def get(self, request):
+    async def get(self, request):
         """Handle Torque data GET request."""
         # hass = request.app["hass"]
-
+        _LOGGER.debug(request.query)
         session = self.parse_fields(request.query)
         if session is not None:
-            self._async_publish_data(session)
+            await self._async_publish_data(session)
         return "OK!"
 
     def parse_fields(self, qdata):  # noqa
@@ -182,14 +182,13 @@ class TorqueReceiveDataView(HomeAssistantView):
             return session
         raise Exception("Not configured email")
 
-    def _get_field(self, session, key):
-        name = self.data[session]["fullName"].get(key, assumedFullName.get(key, key))
-        short_name = self.data[session]["shortName"].get(
-            key, assumedShortName.get(key, key)
-        )
-        unit = self.data[session]["defaultUnit"].get(key, assumedUnits.get(key, ""))
+    def _get_field(self, session: str, key: str):
+        name: str = self.data[session]["fullName"].get(key, assumedFullName.get(key, key))
+        short_name: str = self.data[session]["shortName"].get(key, assumedShortName.get(key, key))
+        unit: str = self.data[session]["defaultUnit"].get(key, assumedUnits.get(key, ""))
         value = self.data[session]["value"].get(key)
-        short_name = slugify(short_name)
+
+        short_name = slugify(str(short_name))
 
         if self.imperial is True:
             if unit in imperalUnits:
@@ -214,7 +213,7 @@ class TorqueReceiveDataView(HomeAssistantView):
         retdata["time"] = self.data[session]["time"]
         meta = {}
 
-        for key in self.data[session]["value"].items():
+        for key, _ in self.data[session]["value"].items():
             row_data = self._get_field(session, key)
             retdata[row_data["short_name"]] = row_data["value"]
             meta[row_data["short_name"]] = {
@@ -231,10 +230,22 @@ class TorqueReceiveDataView(HomeAssistantView):
         # Do not publish until we have at least the car name
         # Why don't I use Id? Because you may have multiple
         # phones pushing data on the same car, and ids would differ.
-        if "Name" not in session_data["profile"] or self.coordinator is None:
-            return
+        if "Name" not in session_data["profile"]:
+            # do we have another session with the same profile id?
+            current_id = session_data["profile"]["id"]
+            other_sessions = [
+                self.data[key]
+                for key in self.data.keys()
+                if self.data[key]["profile"]["id"] == current_id and "Name" in self.data[key]["profile"]]
+            if len(other_sessions) == 0:
+                _LOGGER.error("Missing profile name from torque data.")
+                return
+            else:
+                session_data["profile"]["Name"] = other_sessions[0]["profile"]["Name"]
+        if (self.coordinator is None or self.coordinator.async_set_updated_data is None):
+            raise Exception("Invalid coordinator state")
 
-        await self.coordinator.async_set_updated_data(session_data)
+        self.coordinator.async_set_updated_data(session_data)
         await self.coordinator.add_entities(session_data)
 
 
