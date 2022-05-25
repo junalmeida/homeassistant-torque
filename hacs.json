@@ -1,10 +1,7 @@
 {
     "name": "Torque Logger",
     "hacs": "1.6.0",
-    "domains": [
-        "device_tracker",
-        "sensor"
-    ],
+    "domain": "torque_logger",
     "homeassistant": "2022.4.0",
     "filename": "torque_logger.zip",
     "zip_release": true,
