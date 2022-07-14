@@ -9,9 +9,9 @@
   "dependencies": [
     "http"
   ],
-  "requirements": {
-    "pint": "*"
-  },
+  "requirements": [
+    "pint==*"
+  ],
   "codeowners": [
     "@junalmeida"
   ]
