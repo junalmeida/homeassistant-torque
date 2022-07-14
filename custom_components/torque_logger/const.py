@@ -13,7 +13,7 @@ with open(_manifest, encoding="utf-8") as file:
 ATTRIBUTION: Final = "Data provided by Torque Pro"
 ISSUE_URL: Final = "https://github.com/junalmeida/homeassistant-torque/issues"
 
-#CONF
+# CONF
 CONF_EMAIL: Final = "email"
 CONF_IMPERIAL: Final = "imperial"
 
@@ -41,6 +41,7 @@ SPEED_ICON: Final = "mdi:gauge"
 FUEL_ICON: Final = "mdi:gas-station"
 TIME_ICON: Final = "mdi:clock"
 CITY_ICON: Final = "mdi:city"
+SPEED_ICON: Final = "mdi:speedometer"
 
 # ATTR
 ATTR_ALTITUDE: Final = "altitude"
