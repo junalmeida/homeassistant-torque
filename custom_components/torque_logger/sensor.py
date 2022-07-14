@@ -12,7 +12,7 @@ from homeassistant.helpers import entity_registry, device_registry
 
 from .const import (
     CITY_ICON, DISTANCE_ICON, DOMAIN,
-    DEFAULT_ICON, FUEL_ICON, HIGHWAY_ICON, SENSOR,
+    DEFAULT_ICON, FUEL_ICON, HIGHWAY_ICON, SENSOR, SPEED_ICON,
     TIME_ICON)
 from .entity import TorqueEntity
 
@@ -22,9 +22,10 @@ if TYPE_CHECKING:
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
+
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback):
+        hass: HomeAssistant, entry: ConfigEntry,
+        async_add_entities: AddEntitiesCallback):
     """Setup sensor platform."""
     coordinator: 'TorqueLoggerCoordinator' = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     coordinator.async_add_sensor = async_add_entities
@@ -52,29 +53,31 @@ async def async_setup_entry(
         )
         restore_entities = [
             TorqueSensor(coordinator, entry,
-                sensor.entity_id[len(SENSOR) + len(car_id) + 2:len(sensor.entity_id)],
-                device_info)
+                         sensor.entity_id[len(SENSOR) + len(car_id) + 2:len(sensor.entity_id)],
+                         device_info)
             for sensor in ent_reg.entities.values()
             if sensor.device_id == device.id and sensor.domain == SENSOR
         ]
         logmsg = f"Restoring {', '.join([sensor.entity_id for sensor in restore_entities])}"
         _LOGGER.debug(logmsg)
         async_add_entities(restore_entities)
+
+
 class TorqueSensor(TorqueEntity, RestoreSensor):
     """Torque Sensor class."""
 
     def __init__(self, coordinator: 'TorqueLoggerCoordinator',
-    config_entry: ConfigEntry, sensor_key: str, device: DeviceInfo):
+                 config_entry: ConfigEntry, sensor_key: str, device: DeviceInfo):
         super().__init__(coordinator, config_entry, sensor_key, device)
 
         if self.coordinator.data is not None and "meta" in self.coordinator.data and self.sensor_key in self.coordinator.data["meta"]:
             self._attr_native_unit_of_measurement = (self.coordinator
-                .data["meta"][self.sensor_key]["unit"])
-            sensor_name=self.coordinator.data["meta"].get(self.sensor_key)["name"]
-            self._attr_name = f"{self._car_name} {sensor_name}"
+                                                     .data["meta"][self.sensor_key]["unit"])
+            sensor_name = self.coordinator.data["meta"].get(self.sensor_key)["name"]
+            self._attr_name = sensor_name
             self._set_icon()
 
-        self.entity_id=f"{SENSOR}.{self._car_id}_{sensor_key}"
+        self.entity_id = f"{SENSOR}.{self._car_id}_{sensor_key}"
         self._restored_state = None
 
     @property
@@ -94,7 +97,7 @@ class TorqueSensor(TorqueEntity, RestoreSensor):
         native_state = await self.async_get_last_sensor_data()
         if not state or not native_state:
             return
-        logmsg =f"Restore state of {self.entity_id} to {native_state}"
+        logmsg = f"Restore state of {self.entity_id} to {native_state}"
         _LOGGER.debug(logmsg)
         self._restored_state = native_state.native_value
         self._attr_name = state.name
@@ -115,3 +118,5 @@ class TorqueSensor(TorqueEntity, RestoreSensor):
             self._attr_icon = HIGHWAY_ICON
         if re.search('city', self._attr_name, re.IGNORECASE):
             self._attr_icon = CITY_ICON
+        if re.search('speed', self._attr_name, re.IGNORECASE):
+            self._attr_icon = SPEED_ICON

@@ -78,27 +78,27 @@ class TorqueDeviceTracker(TorqueEntity, TrackerEntity, RestoreEntity):
     @property
     def location_accuracy(self):
         """Return the gps accuracy of the device."""
-        if self.coordinator.data is not None and TORQUE_GPS_ACCURACY in self.coordinator.data:
+        if self.coordinator.data is not None and TORQUE_GPS_ACCURACY in self.coordinator.data and self.coordinator.data[TORQUE_GPS_ACCURACY] is not None:
             return float(self.coordinator.data[TORQUE_GPS_ACCURACY])
-        elif self._restored_state is not None and ATTR_GPS_ACCURACY in self._restored_state:
+        elif self._restored_state is not None and ATTR_GPS_ACCURACY in self._restored_state and self._restored_state[ATTR_GPS_ACCURACY] is not None:
             return float(self._restored_state[ATTR_GPS_ACCURACY])
         else:
             return None
     @property
     def latitude(self):
         """Return latitude value of the device."""
-        if self.coordinator.data is not None and TORQUE_GPS_LAT in self.coordinator.data:
+        if self.coordinator.data is not None and TORQUE_GPS_LAT in self.coordinator.data and self.coordinator.data[TORQUE_GPS_LAT] is not None:
             return float(self.coordinator.data[TORQUE_GPS_LAT])
-        elif self._restored_state is not None and ATTR_LATITUDE in self._restored_state:
+        elif self._restored_state is not None and ATTR_LATITUDE in self._restored_state and self._restored_state[ATTR_LATITUDE] is not None:
             return float(self._restored_state[ATTR_LATITUDE])
         else:
             return None
     @property
     def longitude(self):
         """Return longitude value of the device."""
-        if self.coordinator.data is not None and TORQUE_GPS_LON in self.coordinator.data:
+        if self.coordinator.data is not None and TORQUE_GPS_LON in self.coordinator.data and self.coordinator.data[TORQUE_GPS_LON] is not None:
             return float(self.coordinator.data[TORQUE_GPS_LON])
-        elif self._restored_state is not None and ATTR_LONGITUDE in self._restored_state:
+        elif self._restored_state is not None and ATTR_LONGITUDE in self._restored_state and self._restored_state[ATTR_LONGITUDE] is not None:
             return float(self._restored_state[ATTR_LONGITUDE])
         else:
             return None
