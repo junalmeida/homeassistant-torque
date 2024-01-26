@@ -1,18 +1,18 @@
 {
   "domain": "torque_logger",
   "name": "Torque Logger",
-  "documentation": "https://github.com/junalmeida/homeassistant-torque#readme",
-  "iot_class": "local_push",
-  "issue_tracker": "https://github.com/junalmeida/homeassistant-torque/issues",
-  "version": "0.0.0",
+  "codeowners": [
+    "@junalmeida"
+  ],
   "config_flow": true,
   "dependencies": [
     "http"
   ],
+  "documentation": "https://github.com/junalmeida/homeassistant-torque#readme",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/junalmeida/homeassistant-torque/issues",
   "requirements": [
     "pint==0.19.2"
   ],
-  "codeowners": [
-    "@junalmeida"
-  ]
+  "version": "0.0.0"
 }
